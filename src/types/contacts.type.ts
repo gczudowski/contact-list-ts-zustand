@@ -25,4 +25,5 @@ export interface IContactStateZustand {
   toggleContactStatus: (itemId: string) => void;
   setContactsLoading: (isLoading: boolean) => void;
   setContactsFetchError: (errorMessage: string) => void;
+  appendItems: (newItems: IContact[]) => void;
 }

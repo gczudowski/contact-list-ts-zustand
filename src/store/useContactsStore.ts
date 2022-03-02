@@ -1,6 +1,6 @@
 import create from 'zustand';
 import fetchContactsFromApi from '@src/services/api/api';
-import { IContactStateZustand, IContactStateItem } from '@src/types/contacts.type';
+import { IContactStateZustand, IContactStateItem, IContact } from '@src/types/contacts.type';
 
 const sortContactItems = (firstItem: IContactStateItem, secondItem: IContactStateItem): number => {
   if (!!firstItem.isActive === !!secondItem.isActive) {
@@ -16,19 +16,17 @@ const useStore = create<IContactStateZustand>((set, get) => ({
   hasMore: true,
   errorMessage: '',
   fetchContacts: async () => {
-    get().setContactsLoading(true);
-    get().setContactsFetchError('');
+    const { setContactsLoading, setContactsFetchError, appendItems } = get();
+
+    setContactsLoading(true);
+    setContactsFetchError('');
 
     try {
-      const response = await fetchContactsFromApi();
-
-      set(({ items }) => ({
-        items: [...items, ...response],
-      }));
+      appendItems(await fetchContactsFromApi());
     } catch (error) {
-      get().setContactsFetchError(`Error occured with message: ${error}. Try again later...`);
+      setContactsFetchError(`Error occured with message: ${error}. Try again later...`);
     } finally {
-      get().setContactsLoading(false);
+      setContactsLoading(false);
     }
   },
   toggleContactStatus(itemId: string) {
@@ -52,6 +50,11 @@ const useStore = create<IContactStateZustand>((set, get) => ({
     set({
       errorMessage,
     });
+  },
+  appendItems(newItems: IContact[]) {
+    set(({ items }) => ({
+      items: [...items, ...newItems],
+    }));
   },
 }));
 
