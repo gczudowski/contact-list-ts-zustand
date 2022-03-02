@@ -38,7 +38,11 @@ jest.mock('@src/services/api/api', () => ({
 }));
 
 describe('useContactsStore', () => {
-  const oryginalState = { ...useContactsStore.getState(), items: initialStoreValue };
+  const oryginalState = {
+    ...useContactsStore.getState(),
+    items: initialStoreValue,
+    errorMessage: 'initial error message',
+  };
 
   beforeEach(() => {
     useContactsStore.setState(oryginalState);
@@ -57,6 +61,19 @@ describe('useContactsStore', () => {
       });
 
       expect(result.current.isLoading).toEqual(true);
+    });
+
+    it('sets error message to empty', async () => {
+      mockFetchContactsFromApi = () => new Promise(() => {});
+      const { result } = renderHook(() => useContactsStore());
+
+      expect(result.current.errorMessage).toEqual('initial error message');
+
+      await act(async () => {
+        result.current.fetchContacts();
+      });
+
+      expect(result.current.errorMessage).toEqual('');
     });
 
     it('sets isLoading to false after fetch', async () => {
@@ -86,7 +103,9 @@ describe('useContactsStore', () => {
         });
       const { result } = renderHook(() => useContactsStore());
 
-      expect(result.current.errorMessage).toEqual('');
+      expect(result.current.errorMessage).not.toEqual(
+        'Error occured with message: Error: error message mock. Try again later...',
+      );
 
       await act(async () => {
         result.current.fetchContacts();
@@ -154,7 +173,7 @@ describe('useContactsStore', () => {
     it('sets properly sets error message when message is empty', async () => {
       const { result } = renderHook(() => useContactsStore());
 
-      expect(result.current.errorMessage).toEqual('');
+      expect(result.current.errorMessage).not.toEqual('');
 
       await act(async () => {
         result.current.setContactsFetchError('');
@@ -166,7 +185,7 @@ describe('useContactsStore', () => {
     it('sets properly sets error message when message is not empty', async () => {
       const { result } = renderHook(() => useContactsStore());
 
-      expect(result.current.errorMessage).toEqual('');
+      expect(result.current.errorMessage).not.toEqual('message mock');
 
       await act(async () => {
         result.current.setContactsFetchError('message mock');

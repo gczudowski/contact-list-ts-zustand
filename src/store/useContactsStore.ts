@@ -17,6 +17,7 @@ const useStore = create<IContactStateZustand>((set, get) => ({
   errorMessage: '',
   fetchContacts: async () => {
     get().setContactsLoading(true);
+    get().setContactsFetchError('');
 
     try {
       const response = await fetchContactsFromApi();
