@@ -15,3 +15,14 @@ export interface IContactState {
   hasMore: boolean;
   errorMessage: string;
 }
+
+export interface IContactStateZustand {
+  items: IContactStateItem[];
+  isLoading: boolean;
+  hasMore: boolean;
+  errorMessage: string;
+  fetchContacts: () => Promise<void>;
+  toggleContactStatus: (itemId: string) => void;
+  setContactsLoading: (isLoading: boolean) => void;
+  setContactsFetchError: (errorMessage: string) => void;
+}
